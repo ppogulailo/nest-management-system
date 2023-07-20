@@ -81,6 +81,17 @@ export class UserService {
     if (!newBoss) {
       throw new NotFoundException('User doesnt exist or not a boss!');
     }
+    const updatedUser = await this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        boss: {
+          connect: { id: newBoss.id },
+        },
+      },
+    });
+    return updatedUser;
   }
 
   async updateRole(id: string, role: UserRole): Promise<User> {
