@@ -21,10 +21,13 @@
   },
   "dependencies": {
     "@nestjs/common": "^10.1.0",
+    "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/jwt": "^10.1.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.2",
     "@prisma/client": "^5.0.0",
+    "argon2": "^0.30.3",
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "reflect-metadata": "^0.1.13",
