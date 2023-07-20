@@ -26,9 +26,6 @@ export class AuthMiddleware implements NestMiddleware {
         // add the user to our req object, so that we can access it later when we need it
         // if it would be here, we would like overwrite
         req.user = user;
-        // if (!user.confirm) {
-        //   throw new ForbiddenException(USER_WASNT_CONFIRMED);
-        // }
         next();
       } else {
         throw new UnauthorizedException('USER_NOT_AUTHORIZE');
