@@ -1,5 +1,4 @@
 import {
-  ForbiddenException,
   Injectable,
   NestMiddleware,
   UnauthorizedException,
@@ -7,7 +6,7 @@ import {
 import { NextFunction, Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from '../../user/user.service';
-import { USER_NOT_AUTHORIZE } from "../../user/const/user.const";
+import { USER_NOT_AUTHORIZE } from '../../user/const/user.const';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {

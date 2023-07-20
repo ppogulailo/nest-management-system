@@ -6,7 +6,11 @@ import {
 import { PrismaService } from '../prisma.service';
 import { User, UserRole } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
-import { USER_EXIST, USER_NOT_FOUND, USER_NOT_FOUND_OR_NOT_A_BOSS } from "./const/user.const";
+import {
+  USER_EXIST,
+  USER_NOT_FOUND,
+  USER_NOT_FOUND_OR_NOT_A_BOSS,
+} from './const/user.const';
 import { USER_SELECT } from './const/user.select';
 import { ACCESS_DENIED } from '../auth/const/auth.const';
 
