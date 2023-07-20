@@ -30,19 +30,28 @@ export class UserService {
   }
   async create(userDto: CreateUserDto): Promise<User> {
     const existUser = await this.findByEmail(userDto.email);
-    console.log(existUser);
     if (existUser) {
       throw new NotFoundException(USER_EXIST);
     }
+    const boss = await this.findBoss();
     const user = await this.prismaService.user.create({
       data: {
         ...userDto,
         role: 'User',
+        boss: {
+          connect: { id: boss.id },
+        },
       },
     });
     return user;
   }
-
+  async findBoss(): Promise<User> {
+    return this.prismaService.user.findFirst({
+      where: {
+        role: 'Boss',
+      },
+    });
+  }
   async findById(id: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({
       where: { id },
