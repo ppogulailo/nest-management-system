@@ -13,6 +13,15 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found!');
     }
-    return user
+    return user;
+  }
+  async findByEmail(email: string): Promise<User> {
+    const user = this.prismaService.user.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found!');
+    }
+    return user;
   }
 }
