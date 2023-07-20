@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -11,7 +19,10 @@ import { User } from '../common/decorators/user.decorator';
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
-
+  @Get()
+  async find(@User() user) {
+    return this.userService.find(user);
+  }
   @Put(':id')
   async updateRole(@Param('id') id: string, @Body() { role }: UpdateRoleDto) {
     return this.userService.updateRole(id, role);

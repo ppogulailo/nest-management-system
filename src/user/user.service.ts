@@ -7,7 +7,27 @@ import { USER_EXIST, USER_NOT_FOUND } from './const/user.const';
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
-
+  async findAll() {
+    return this.prismaService.user.findMany({});
+  }
+  async findSubordinates(userId: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: { subordinates: true },
+    });
+    return user.subordinates;
+  }
+  async find(user: User) {
+    if (user.role === 'Administrator') {
+      return this.findAll();
+    }
+    if (user.role === 'Boss') {
+      return this.findSubordinates(user.id);
+    }
+    if (user.role === 'User') {
+      return this.findById(user.id);
+    }
+  }
   async create(userDto: CreateUserDto): Promise<User> {
     const existUser = await this.findByEmail(userDto.email);
     console.log(existUser);

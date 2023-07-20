@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NestMiddleware,
   UnauthorizedException,
@@ -11,25 +12,29 @@ import { UserService } from '../../user/user.service';
 export class AuthMiddleware implements NestMiddleware {
   constructor(
     private authService: AuthService,
-    private usersService: UserService,
+    private userService: UserService,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     try {
-      const tokenArray: string[] = req.headers['authorization'].split(' ');
-      const decodedToken = await this.authService.verifyUser(tokenArray[1]);
+      const decodedToken = await this.authService.verifyUser(
+        req.cookies.jwt.tokens.accessToken,
+      );
       // make sure that the user is not deleted, or that props or rights changed compared to the time when the jwt was issued
-      const user = await this.usersService.findById(decodedToken.sub);
+      const user = await this.userService.findByEmail(decodedToken.email);
       if (user) {
         // add the user to our req object, so that we can access it later when we need it
         // if it would be here, we would like overwrite
         req.user = user;
+        // if (!user.confirm) {
+        //   throw new ForbiddenException(USER_WASNT_CONFIRMED);
+        // }
         next();
       } else {
-        throw new UnauthorizedException('User is unauthorized');
+        throw new UnauthorizedException('USER_NOT_AUTHORIZE');
       }
-    } catch {
-      throw new UnauthorizedException('User is unauthorized');
+    } catch (e) {
+      throw new UnauthorizedException('USER_NOT_AUTHORIZE');
     }
   }
 }

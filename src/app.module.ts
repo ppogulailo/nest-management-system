@@ -19,7 +19,6 @@ export class AppModule implements NestModule {
         { path: '/api/auth/signup', method: RequestMethod.POST },
         { path: '/api/auth/signin', method: RequestMethod.POST },
         { path: '/api/auth/refresh', method: RequestMethod.GET },
-        { path: '/api/files/image/:imagename', method: RequestMethod.GET },
       )
       .forRoutes('');
   }
