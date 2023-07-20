@@ -28,7 +28,7 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return { jwt: jwt.tokens.accessToken, id: jwt.id };
+    return { id: jwt.id };
   }
 
   @Post('signin')
@@ -42,7 +42,7 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return { jwt: jwt.tokens.accessToken, id: jwt.id };
+    return { id: jwt.id };
   }
 
   @Get('logout')
