@@ -7,6 +7,7 @@ import {
 import { NextFunction, Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from '../../user/user.service';
+import { USER_NOT_AUTHORIZE } from "../../user/const/user.const";
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -28,10 +29,10 @@ export class AuthMiddleware implements NestMiddleware {
         req.user = user;
         next();
       } else {
-        throw new UnauthorizedException('USER_NOT_AUTHORIZE');
+        throw new UnauthorizedException(USER_NOT_AUTHORIZE);
       }
     } catch (e) {
-      throw new UnauthorizedException('USER_NOT_AUTHORIZE');
+      throw new UnauthorizedException(USER_NOT_AUTHORIZE);
     }
   }
 }
