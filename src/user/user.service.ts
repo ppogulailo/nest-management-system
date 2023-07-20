@@ -13,7 +13,7 @@ export class UserService {
     const user = this.prismaService.user.create({
       data: userDto,
     });
-    return user
+    return user;
   }
   async findById(id: string): Promise<User> {
     const user = this.prismaService.user.findUnique({
