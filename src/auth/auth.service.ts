@@ -12,7 +12,7 @@ import { PrismaService } from '../prisma.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { USER_EXIST, USER_NOT_FOUND } from '../user/const/user.const';
 import { AuthDto } from './dto/auth.dto';
-import { USER_WRONG_PASSWORD } from './const/auth.const';
+import { ACCESS_DENIED, USER_WRONG_PASSWORD } from './const/auth.const';
 
 @Injectable()
 export class AuthService {
@@ -79,14 +79,14 @@ export class AuthService {
   async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.userService.findById(userId);
     if (!user || !user.refreshToken) {
-      throw new ForbiddenException('Access Denied');
+      throw new ForbiddenException(ACCESS_DENIED);
     }
     const refreshTokenMatches = await argon2.verify(
       user.refreshToken,
       refreshToken,
     );
     if (!refreshTokenMatches) {
-      throw new ForbiddenException('Access Denied');
+      throw new ForbiddenException(ACCESS_DENIED);
     }
     const tokens = await this.getTokens(user.id, user.email, user.name);
     await this.updateRefreshToken(user.id, tokens.refreshToken);

@@ -12,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthDto } from './dto/auth.dto';
 import { Request, Response } from 'express';
+import { COOKIE_DENIED, JWT_DENIED } from './const/auth.const';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -55,14 +56,14 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     if (!request.cookies.jwt) {
-      throw new ForbiddenException('Cookie Denied');
+      throw new ForbiddenException(COOKIE_DENIED);
     }
     const jwt = await this.authService.refreshTokens(
       request.cookies.jwt.id,
       request.cookies.jwt.tokens.refreshToken,
     );
     if (!jwt) {
-      throw new ForbiddenException('Jwt Denied');
+      throw new ForbiddenException(JWT_DENIED);
     }
     response.cookie('jwt', jwt, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
