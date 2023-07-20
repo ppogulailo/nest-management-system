@@ -1,14 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, UserRole } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { USER_EXIST, USER_NOT_FOUND } from './const/user.const';
+import { USER_SELECT } from './const/user.select';
+import { ACCESS_DENIED } from '../auth/const/auth.const';
 
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
   async findAll() {
-    return this.prismaService.user.findMany({});
+    return this.prismaService.user.findMany({
+      select: USER_SELECT,
+    });
   }
   async findSubordinates(userId: string) {
     const user = await this.prismaService.user.findUnique({
@@ -55,6 +63,7 @@ export class UserService {
   async findById(id: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({
       where: { id },
+      include: { boss: true, subordinates: true },
     });
     return user;
   }
@@ -62,6 +71,7 @@ export class UserService {
   async findByEmail(email: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
+      select: USER_SELECT,
     });
     return user;
   }
@@ -71,7 +81,9 @@ export class UserService {
     if (!existUser) {
       throw new NotFoundException(USER_NOT_FOUND);
     }
-    console.log(user);
+    if (existUser.userId !== user.id) {
+      throw new ForbiddenException(ACCESS_DENIED);
+    }
     const newBoss = await this.prismaService.user.findFirst({
       where: {
         id: bossId,
