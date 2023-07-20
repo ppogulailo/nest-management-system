@@ -10,6 +10,9 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { PrismaService } from '../prisma.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { USER_EXIST, USER_NOT_FOUND } from '../user/const/user.const';
+import { AuthDto } from './dto/auth.dto';
+import { USER_WRONG_PASSWORD } from './const/auth.const';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +27,7 @@ export class AuthService {
     // Check if user exists
     const userExists = await this.userService.findByEmail(createUserDto.email);
     if (userExists) {
-      throw new BadRequestException(ALREADY_USER_ERROR);
+      throw new BadRequestException(USER_EXIST);
     }
 
     // Hash password
@@ -46,7 +49,7 @@ export class AuthService {
 
   async signIn(data: AuthDto) {
     // Check if user exists
-    const user = await this.usersService.findByEmail(data.email);
+    const user = await this.userService.findByEmail(data.email);
 
     if (!user) {
       throw new UnauthorizedException(USER_NOT_FOUND);
