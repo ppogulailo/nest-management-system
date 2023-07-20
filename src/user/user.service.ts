@@ -22,14 +22,14 @@ export class UserService {
       select: USER_SELECT,
     });
   }
-  async findSubordinates(userId: string) {
+  async findSubordinates(userId: string): Promise<User[]> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
       select: { subordinates: true },
     });
     return user.subordinates;
   }
-  async find(user: User) {
+  async find(user: User): Promise<User[] | User> {
     if (user.role === 'Administrator') {
       return this.findAll();
     }
@@ -80,7 +80,7 @@ export class UserService {
     return user;
   }
 
-  async changeBoss(id: string, bossId: string, user: User) {
+  async changeBoss(id: string, bossId: string, user: User): Promise<User> {
     const existUser = await this.findById(id);
     if (!existUser) {
       throw new NotFoundException(USER_NOT_FOUND);

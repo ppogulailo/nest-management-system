@@ -13,6 +13,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { USER_EXIST, USER_NOT_FOUND } from '../user/const/user.const';
 import { AuthDto } from './dto/auth.dto';
 import { ACCESS_DENIED, USER_WRONG_PASSWORD } from './const/auth.const';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
     private prismaService: PrismaService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto): Promise<any> {
+  async signUp(createUserDto: CreateUserDto) {
     // Check if user exists
     const userExists = await this.userService.findByEmail(createUserDto.email);
     if (userExists) {
@@ -65,7 +66,7 @@ export class AuthService {
     return { tokens: tokens, id: user.id };
   }
 
-  async logout(userId: string) {
+  async logout(userId: string): Promise<User> {
     return this.prismaService.user.update({
       where: {
         id: userId,
@@ -97,7 +98,10 @@ export class AuthService {
     return argon2.hash(data);
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string) {
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<void> {
     const hashedRefreshToken = await argon2.hash(refreshToken);
     await this.prismaService.user.update({
       where: {
