@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Put } from '@nestjs/common';
+import { Body, Controller, Param, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateRoleDto } from './dto/update-role.dto';
