@@ -14,6 +14,7 @@ import { USER_EXIST, USER_NOT_FOUND } from '../user/const/user.const';
 import { AuthDto } from './dto/auth.dto';
 import { ACCESS_DENIED, USER_WRONG_PASSWORD } from './const/auth.const';
 import { User } from '@prisma/client';
+import { ITokens } from '../common/types/tokens';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,7 @@ export class AuthService {
     private prismaService: PrismaService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto) {
+  async signUp(createUserDto: CreateUserDto): Promise<ITokens> {
     // Check if user exists
     const userExists = await this.userService.findByEmail(createUserDto.email);
     if (userExists) {
@@ -45,10 +46,10 @@ export class AuthService {
     );
 
     await this.updateRefreshToken(newUser.id, tokens.refreshToken);
-    return { tokens: tokens, id: newUser.id };
+    return tokens;
   }
 
-  async signIn(data: AuthDto) {
+  async signIn(data: AuthDto): Promise<ITokens> {
     // Check if user exists
     const user = await this.userService.findByEmail(data.email);
 
@@ -63,7 +64,7 @@ export class AuthService {
     const tokens = await this.getTokens(user.id, user.email, user.name);
 
     await this.updateRefreshToken(user.id, tokens.refreshToken);
-    return { tokens: tokens, id: user.id };
+    return tokens;
   }
 
   async logout(userId: string): Promise<User> {
@@ -77,7 +78,7 @@ export class AuthService {
     });
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
+  async refreshTokens(userId: string, refreshToken: string): Promise<ITokens> {
     const user = await this.userService.findById(userId);
     if (!user || !user.refreshToken) {
       throw new ForbiddenException(ACCESS_DENIED);
@@ -91,7 +92,7 @@ export class AuthService {
     }
     const tokens = await this.getTokens(user.id, user.email, user.name);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
-    return { tokens: tokens, id: user.id };
+    return tokens;
   }
 
   async hashData(data: string) {
@@ -120,7 +121,11 @@ export class AuthService {
     return verify;
   }
 
-  async getTokens(userId: string, email: string, name: string) {
+  async getTokens(
+    userId: string,
+    email: string,
+    name: string,
+  ): Promise<ITokens> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
