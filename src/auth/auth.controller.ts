@@ -2,13 +2,13 @@ import {
   Body,
   Controller,
   ForbiddenException,
-  Get,
+  Get, HttpCode,
   Post,
   Req,
-  Res,
-} from '@nestjs/common';
+  Res
+} from "@nestjs/common";
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthDto } from './dto/auth.dto';
 import { Request, Response } from 'express';
@@ -17,7 +17,10 @@ import { COOKIE_DENIED, JWT_DENIED } from './const/auth.const';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'POST - SIGNUP' })
+  @ApiResponse({ status: 200 })
+  @HttpCode(200)
   @Post('signup')
   async signup(
     @Body() createUserDto: CreateUserDto,
@@ -29,7 +32,10 @@ export class AuthController {
       httpOnly: true,
     });
   }
-
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'POST - SIGNIN' })
+  @ApiResponse({ status: 200 })
+  @HttpCode(200)
   @Post('signin')
   async signin(
     @Body() data: AuthDto,
@@ -42,12 +48,16 @@ export class AuthController {
       httpOnly: true,
     });
   }
-
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'GET - LOGOUT' })
+  @ApiResponse({ status: 200 })
   @Get('logout')
   async logout(@Req() req: Request): Promise<void> {
     await this.authService.logout(req.user['sub']);
   }
-
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'GET - REFRESH_TOKENS' })
+  @ApiResponse({ status: 200 })
   @Get('refresh')
   async refreshTokens(
     @Req() request: Request,
