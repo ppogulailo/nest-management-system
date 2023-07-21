@@ -83,7 +83,8 @@ export class UserService {
   }
 
   async changeBoss(id: string, bossId: string, user: User): Promise<User> {
-    if (id !== user.id) {
+    const changeBossUser = await this.findById(id);
+    if (changeBossUser.userId !== user.id) {
       throw new ForbiddenException(ACCESS_DENIED);
     }
     const updatedUser = await this.prismaService.user.update({
