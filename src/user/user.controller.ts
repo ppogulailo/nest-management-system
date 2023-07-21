@@ -29,16 +29,6 @@ export class UserController {
     return this.userService.find(user);
   }
   @ApiCookieAuth()
-  @ApiOperation({ summary: 'PUT - UPDATE_ROLE' })
-  @ApiResponse({ status: 200 })
-  @Put(':id')
-  async updateRole(
-    @Param('id', IdValidationPipe) id: string,
-    @Body() { role }: UpdateRoleDto,
-  ) {
-    return this.userService.updateRole(id, role);
-  }
-  @ApiCookieAuth()
   @ApiOperation({ summary: 'PUT - CHANGE_BOSS' })
   @ApiResponse({ status: 200 })
   @HasRoles(UserRole.Boss)

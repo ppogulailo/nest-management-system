@@ -100,15 +100,4 @@ export class UserService {
     return updatedUser;
   }
 
-  async updateRole(id: string, role: UserRole): Promise<User> {
-    const user = await this.prismaService.user.update({
-      where: {
-        id,
-      },
-      data: {
-        role,
-      },
-    });
-    return user;
-  }
 }
