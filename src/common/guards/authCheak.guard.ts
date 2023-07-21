@@ -18,7 +18,7 @@ export class AuthMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     try {
       const decodedToken = await this.authService.verifyUser(
-        req.cookies.jwt.tokens.accessToken,
+        req.cookies.jwt.accessToken,
       );
       // make sure that the user is not deleted, or that props or rights changed compared to the time when the jwt was issued
       const user = await this.userService.findByEmail(decodedToken.email);

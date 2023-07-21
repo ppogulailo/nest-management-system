@@ -30,14 +30,16 @@ export class UserService {
     return user.subordinates;
   }
   async find(user: User): Promise<User[] | User> {
-    if (user.role === 'Administrator') {
-      return this.findAll();
-    }
-    if (user.role === 'Boss') {
-      return this.findSubordinates(user.id);
-    }
-    if (user.role === 'User') {
-      return this.findById(user.id);
+    switch (user.role) {
+      case UserRole.Administrator:
+        return this.findAll();
+      case UserRole.Boss:
+        return this.findSubordinates(user.id);
+      case UserRole.User:
+        return this.findById(user.id);
+      default:
+        // Handle any other cases here
+        throw new ForbiddenException(ACCESS_DENIED);
     }
   }
   async create(userDto: CreateUserDto): Promise<User> {
@@ -91,7 +93,7 @@ export class UserService {
     const newBoss = await this.prismaService.user.findFirst({
       where: {
         id: bossId,
-        role: 'Boss',
+        role: UserRole.Boss,
       },
     });
     if (!newBoss) {

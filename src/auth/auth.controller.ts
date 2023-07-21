@@ -22,31 +22,29 @@ export class AuthController {
   async signup(
     @Body() createUserDto: CreateUserDto,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<void> {
     const jwt = await this.authService.signUp(createUserDto);
     response.cookie('jwt', jwt, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return { id: jwt.id };
   }
 
   @Post('signin')
   async signin(
     @Body() data: AuthDto,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<void> {
     const jwt = await this.authService.signIn(data);
 
     response.cookie('jwt', jwt, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return { id: jwt.id };
   }
 
   @Get('logout')
-  async logout(@Req() req: Request) {
+  async logout(@Req() req: Request): Promise<void> {
     await this.authService.logout(req.user['sub']);
   }
 
@@ -54,7 +52,7 @@ export class AuthController {
   async refreshTokens(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-  ) {
+  ): Promise<void> {
     if (!request.cookies.jwt) {
       throw new ForbiddenException(COOKIE_DENIED);
     }
@@ -69,6 +67,5 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
-    return jwt.tokens.accessToken;
   }
 }
