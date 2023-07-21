@@ -51,8 +51,9 @@ export class AuthService {
 
   async signIn(data: AuthDto): Promise<ITokens> {
     // Check if user exists
-    const user = await this.userService.findByEmail(data.email);
 
+    const user = await this.userService.findByEmail(data.email);
+    console.log(user);
     if (!user) {
       throw new UnauthorizedException(USER_NOT_FOUND);
     }
@@ -95,7 +96,7 @@ export class AuthService {
     return tokens;
   }
 
-  async hashData(data: string) {
+  async hashData(data: string): Promise<string> {
     return argon2.hash(data);
   }
 
