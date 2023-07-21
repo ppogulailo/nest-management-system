@@ -83,21 +83,8 @@ export class UserService {
   }
 
   async changeBoss(id: string, bossId: string, user: User): Promise<User> {
-    const existUser = await this.findById(id);
-    if (!existUser) {
-      throw new NotFoundException(USER_NOT_FOUND);
-    }
-    if (existUser.userId !== user.id) {
+    if (id !== user.id) {
       throw new ForbiddenException(ACCESS_DENIED);
-    }
-    const newBoss = await this.prismaService.user.findFirst({
-      where: {
-        id: bossId,
-        role: UserRole.Boss,
-      },
-    });
-    if (!newBoss) {
-      throw new NotFoundException(USER_NOT_FOUND_OR_NOT_A_BOSS);
     }
     const updatedUser = await this.prismaService.user.update({
       where: {
@@ -105,7 +92,7 @@ export class UserService {
       },
       data: {
         boss: {
-          connect: { id: newBoss.id },
+          connect: { id: bossId },
         },
       },
     });
@@ -113,10 +100,6 @@ export class UserService {
   }
 
   async updateRole(id: string, role: UserRole): Promise<User> {
-    const existUser = await this.findById(id);
-    if (!existUser) {
-      throw new NotFoundException(USER_NOT_FOUND);
-    }
     const user = await this.prismaService.user.update({
       where: {
         id,
