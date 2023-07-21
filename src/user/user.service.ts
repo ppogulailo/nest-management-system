@@ -93,7 +93,7 @@ export class UserService {
     const newBoss = await this.prismaService.user.findFirst({
       where: {
         id: bossId,
-        role: 'Boss',
+        role: UserRole.Boss,
       },
     });
     if (!newBoss) {
