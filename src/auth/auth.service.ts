@@ -53,7 +53,6 @@ export class AuthService {
     // Check if user exists
 
     const user = await this.userService.findByEmail(data.email);
-    console.log(user);
     if (!user) {
       throw new UnauthorizedException(USER_NOT_FOUND);
     }
