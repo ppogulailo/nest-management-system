@@ -4,16 +4,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { User, UserRole } from '@prisma/client';
+import {User, UserRole} from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
   USER_EXIST,
   USER_NOT_FOUND,
-  USER_NOT_FOUND_OR_NOT_A_BOSS,
 } from './const/user.const';
 import { USER_SELECT } from './const/user.select';
 import { ACCESS_DENIED } from '../auth/const/auth.const';
-
+import {UserWithSubordinates} from "../common/types/user-with-subordinates";
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
@@ -22,12 +21,25 @@ export class UserService {
       select: USER_SELECT,
     });
   }
-  async findSubordinates(userId: string): Promise<User[]> {
+  async findSubordinates(userId: string): Promise<UserWithSubordinates> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
-      select: { subordinates: true },
+      select: USER_SELECT,
     });
-    return user.subordinates;
+
+    if (!user) {
+      throw new NotFoundException(USER_NOT_FOUND);
+    }
+
+    const subordinates = user.subordinates || [];
+
+    const subordinatePromises = subordinates.map((subordinate) => this.findSubordinates(subordinate.id));
+    const additionalSubordinates = await Promise.all(subordinatePromises);
+
+    return {
+      ...user,
+      subordinates: additionalSubordinates
+    };
   }
   async find(user: User): Promise<User[] | User> {
     switch (user.role) {
